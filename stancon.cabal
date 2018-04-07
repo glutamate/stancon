@@ -26,3 +26,4 @@ executable stancon
                , text
                , inliterate
                , plotlyhs
+               , microlens
