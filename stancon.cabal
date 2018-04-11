@@ -27,3 +27,6 @@ executable stancon
                , inliterate
                , plotlyhs
                , microlens
+               , containers
+               , lucid
+               , lucid-extras
