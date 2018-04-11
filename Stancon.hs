@@ -86,8 +86,8 @@ linRegression = [
        Real ::: "sigma"
        ],
   Model [
-           "beta" :~ normal (0,1)
-          ,"sigma" :~ gamma (1,1)
+          For "i" 1 "p" ["beta"!["i"] :~ normal (0.0,1.0)]
+          ,"sigma" :~ gamma (1.0,1.0)
           ,For "i" 1 "n" [
             "y"!["i"] :~ normal (("x"!["i"] `dot` "beta"), "sigma")
           ]
@@ -110,7 +110,8 @@ let sdata = "y" <~ map medianValue bh <>
             "p" <~ length (getRow $ head bh)
 
 res <- runStan linRegression sdata sample {numSamples = 100}
-let resEnv = mcmcToEnv res
+seed <- seedEnv <$> newPureMT
+let resEnv = seed <> Map.delete "y" sdata <> mcmcToEnv res
     simEnv = runSimulate linRegression resEnv
 
 
@@ -123,4 +124,7 @@ plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
 
 ```haskell eval
 postPlotRow res ["beta.1", "beta.2" ] :: Html ()
+```
+```haskell eval
+show $ Map.lookup "y" simEnv
 ```

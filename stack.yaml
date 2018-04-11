@@ -37,24 +37,24 @@ resolver: lts-9.21
 # will not be run. This is useful for tweaking upstream packages.
 packages:
 - '.'
-#- ../open/lucid-extras
-#- ../open/plotlyhs
-#- ../open/inliterate
-#- ../open/datasets
-#- ../open/parfoldl
-#- ../open/stanhs
-- location:
-    git: https://github.com/diffusionkinetics/open.git
-    commit: 8d744b56bcaae8f41a6feec13950d94e76b2bfe5
-  extra-dep: true
-  subdirs:
-  - parfoldl
-  - plotlyhs
-  - fuml
-  - inliterate
-  - lucid-extras
-  - datasets
-  - stanhs
+- ../open/lucid-extras
+- ../open/plotlyhs
+- ../open/inliterate
+- ../open/datasets
+- ../open/parfoldl
+- ../open/stanhs
+# - location:
+#     git: https://github.com/diffusionkinetics/open.git
+#     commit: 8d744b56bcaae8f41a6feec13950d94e76b2bfe5
+#   extra-dep: true
+#   subdirs:
+#   - parfoldl
+#   - plotlyhs
+#   - fuml
+#   - inliterate
+#   - lucid-extras
+#   - datasets
+#   - stanhs
 
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
