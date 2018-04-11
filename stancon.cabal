@@ -30,3 +30,5 @@ executable stancon
                , containers
                , lucid
                , lucid-extras
+               , random-fu
+               , random-source
