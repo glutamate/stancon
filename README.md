@@ -8,3 +8,5 @@
 4. `stancon >stancon.html`
 5. now you can open `stancon.html` in a web browser. For instance, you could enter at the command line: `firefox stancon.html’
 
+The paper is using the inliterate system (https://github.com/diffusionkinetics/open/tree/master/inliterate)
+

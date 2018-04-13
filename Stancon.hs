@@ -30,7 +30,8 @@ often, post-posterior calculations are deferred to the host programming language
 the model is rewritten to simulate. This has the disadvantage that the two models may become out of sync and some
 probability distributions may be parameterised in different ways.
 
-Here, we present the results of some experiments with creating bindings to Stan in Haskell, a purely functional
+Here, we present the results of some experiments with creating bindings (https://github.com/diffusionkinetics/open/tree/master/stanhs)
+to Stan in Haskell, a purely functional
 and statically typed programming language. Rather than present “yet another Stan binding” or even worse, try to
 persuade the reader to abandon their current programming language and learn Haskell, our aim here is to present
 some ideas enable a richer set of probabilistic computations from Stan models. These ideas can be implemented in
@@ -132,7 +133,7 @@ let sdata = "y" <~ map medianValue bh <>
             "p" <~ (2 :: Int)
 ```
 Finally, we run the Stan model using the `runStan` function taking as arguments the model, the data value and a configuration value
-that can specify that we are sampling or optimising the posterior.
+that can specify that we are sampling or optimising the posterior. The resulting posterior will be bound to the variable `res`.
 
 ```haskell do
 res <- runStan linRegression sdata sample {numSamples = 500}
@@ -143,24 +144,59 @@ At this point the components of the posterior can be plotted as usual.
 postPlotRow res ["beta.1", "beta.2", "sigma" ] :: Html ()
 ```
 
+we propose that in order to a richer probabilistic programming capability based on the Bayesian update in Stan, it suffices to
+add a function to simulate from a probabilistic model with fine control over the transfer of information from the posterior to
+the simulation environment. By transferring no information, we are simulating from the prior (prior predictive distribution);
+all information, we are simulating from the posterior (posterior predictive distribution). And by controlling the independent
+variables in the dataset we can make predictions for new observations. In the case of timeseries modelling, by manipulating the
+starting value we can continue a simulation from the endpoint of observed data (that is, forecast). Crucially, we are proposing
+that all of these functions are possible without writing the model twice as is usual: once in Stan, and once in the host language.
+Simulation operates on the same model description as that used for inference.
+
+The type of our simulation function is:
+
+```haskell
+runSimulate
+  :: Int       -- Number of simulations we would like to perform
+  -> [Stan]    -- The Stan model
+  -> StanEnv   -- The simulation input environment
+  -> [StanEnv] -- A list of independent simulation outputs
+```
+
+Here `runSimulate n m e` will perform n independent simulations in the model m using environment e. If m contains values from a
+posterior (which has been generated with `runStan`) then each of the independent simulations will use a consistent set of samples from that posterior.
+
+We quickly demonstrate the concept of simulation by simulating a single replica dataset and plotting it:
+
 ```haskell do
 seed <- seedEnv <$> newPureMT
 let resEnv = seed <> Map.delete "y" sdata <> mcmcToEnv res
     simEnv = runSimulateOnce linRegression resEnv
-    simEnvs = runSimulate 100 linRegression resEnv
     postPredOnce = zip (unPairDoubles $ fromJust $ Map.lookup "x" simEnv) (unDoubles $ fromJust $ Map.lookup "y" simEnv)
-    avgYs = avgVar simEnvs "y"
-    residuals = zip (unPairDoubles $ fromJust $ Map.lookup "x" sdata)
-                    $ zipWith (-) (unDoubles $ fromJust $ Map.lookup "y" sdata)
-                                  (unDoubles avgYs)
-
 ```
-
 
 ```haskell eval
 plotly "bhpp" [points (aes & x .~ (fst . fst) & y .~ snd) postPredOnce]
 ```
 
+This simulation facility can be used for a common operation in model criticism: calculating residuals.very often, residuals are
+calculated by averaging the posterior parameters (or using a point estimate), making a single prediction and subtracting this
+from the observed outcome. Here, we argue that this is incorrect. From a Bayesian point of view, it almost never makes sense
+to average the parameters. Instead, the parameters, the predicted outcome and the residuals themselves are all probability
+distributions. In order to achieve something plottable, we average the predicted outcome over all the Markov chain Monte Carlo
+samples and subtract this average prediction from the observed outcome. This has the advantage that in case of banana shaped or
+ multimodal posteriors (arising, for instance from lack of identifiability) the average prediction still has more meaning than
+ the average parameter value.
+
+
+```haskell do
+let simEnvs = runSimulate 100 linRegression resEnv
+
+    avgYs = avgVar simEnvs "y"
+    residuals = zip (unPairDoubles $ fromJust $ Map.lookup "x" sdata)
+                    $ zipWith (-) (unDoubles $ fromJust $ Map.lookup "y" sdata)
+                                  (unDoubles avgYs)
+```
 
 ```haskell eval
 plotly "bhres" [points (aes & x .~ (fst . fst) & y .~ snd) residuals]
