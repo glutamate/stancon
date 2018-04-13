@@ -73,6 +73,11 @@ import qualified Data.Random as R
 import Data.Random.Source.PureMT
 ```
 
+Unlike in other Stan interfaces, in our prototype interface the Stan model itself is described in a data structure
+in the host language, here in Haskell. This has the disadvantage that the Stan file has slightly more syntactic
+noise and is less familiar. However, the Stan model description is now a value in a programming language that can
+be manipulated and calculated based on the circumstances; and for further advantages that will become apparent later
+in this paper. In our current implementation, the Stan model value looks like this:
 
 ```haskell top
 linRegression :: [Stan]
@@ -94,23 +99,51 @@ linRegression = [
           ]
         ]
   ]
-
+```
+```haskell top hide
 getRow b = [rooms b, crimeRate b]
 
 
 postPlotRow post vnms = row_ $ rowEven MD $ flip map vnms $ \vnm -> toHtml (plotly vnm [histogram 50 $ fromJust $ Map.lookup (unpack vnm) post]
    & (layout . margin) ?~ thinMargins & (layout . height) ?~ 300)
 ```
+Then, we have two also create the data structure holding the data input to Stan. Here is an example we will use the Boston Housing dataset found
+in the datasets Haskell package. We load this into the `bh` variable which will hold a list of records describing Boston housing data (`bh :: [BostonHousing]`)
 
 ```haskell do
+
 bh <- getDataset bostonHousing
+```
+Here, we plot the median value against the number of rooms in a residence:
 
+```haskell eval
+plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
+```
+To put this into the Stan data format, we create values of the `StanEnv` type using the custom infix operator `<~`. Haskell allows library
+programmers to define their own infix operators describing the model. Here, we have defined `v <~ d` to mean, create a Stan environment
+where the variable named v holds the data contained in the Haskell variable d. `d` can be any type for which we have defined how to turn
+values into Stan values (that is, implemented the `ToStanData` type class. We concatenate these elementary Stan environments using the
+append operator `<>`.
+
+```haskell do
 let sdata = "y" <~ map medianValue bh <>
-            "x" <~ map getRow bh<>
+            "x" <~ map getRow bh <>
             "n" <~ length bh <>
-            "p" <~ length (getRow $ head bh)
+            "p" <~ (2 :: Int)
+```
+Finally, we run the Stan model using the `runStan` function taking as arguments the model, the data value and a configuration value
+that can specify that we are sampling or optimising the posterior.
 
+```haskell do
 res <- runStan linRegression sdata sample {numSamples = 500}
+```
+At this point the components of the posterior can be plotted as usual.
+
+```haskell eval
+postPlotRow res ["beta.1", "beta.2", "sigma" ] :: Html ()
+```
+
+```haskell do
 seed <- seedEnv <$> newPureMT
 let resEnv = seed <> Map.delete "y" sdata <> mcmcToEnv res
     simEnv = runSimulateOnce linRegression resEnv
@@ -125,10 +158,6 @@ let resEnv = seed <> Map.delete "y" sdata <> mcmcToEnv res
 
 
 ```haskell eval
-plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
-```
-
-```haskell eval
 plotly "bhpp" [points (aes & x .~ (fst . fst) & y .~ snd) postPredOnce]
 ```
 
@@ -138,6 +167,3 @@ plotly "bhres" [points (aes & x .~ (fst . fst) & y .~ snd) residuals]
 ```
 
 
-```haskell eval
-postPlotRow res ["beta.1", "beta.2" ] :: Html ()
-```
