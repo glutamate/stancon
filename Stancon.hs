@@ -16,6 +16,7 @@ distributions. Nevertheless, probabilistic programming in its full power is not 
 the posterior. Computations based on this posterior may be more directly relevant to the data analyst or to the
 decision maker and often require further probabilistic calculations. For instance:
 
+* predicting outcomes for new observations
 * model criticism based on residuals or posterior predictive
 * forecasting
 * risk analysis
@@ -112,9 +113,8 @@ let sdata = "y" <~ map medianValue bh <>
 res <- runStan linRegression sdata sample {numSamples = 100}
 seed <- seedEnv <$> newPureMT
 let resEnv = seed <> Map.delete "y" sdata <> mcmcToEnv res
-    simEnv = runSimulate linRegression resEnv
-
-
+    simEnv = runSimulateOnce linRegression resEnv
+    newY = zip (unPairDoubles $ fromJust $ Map.lookup "x" simEnv) (unDoubles $ fromJust $ Map.lookup "y" simEnv)
 ```
 
 
@@ -123,8 +123,24 @@ plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
 ```
 
 ```haskell eval
+plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
+```
+
+```haskell eval
+plotly "bhpp" [points (aes & x .~ (fst . fst) & y .~ snd) newY]
+```
+
+```haskell eval
 postPlotRow res ["beta.1", "beta.2" ] :: Html ()
 ```
+
+```haskell eval
+show $ Map.lookup "x" simEnv
+
+```
+
+
 ```haskell eval
 show $ Map.lookup "y" simEnv
+
 ```
