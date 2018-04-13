@@ -110,11 +110,17 @@ let sdata = "y" <~ map medianValue bh <>
             "n" <~ length bh <>
             "p" <~ length (getRow $ head bh)
 
-res <- runStan linRegression sdata sample {numSamples = 100}
+res <- runStan linRegression sdata sample {numSamples = 500}
 seed <- seedEnv <$> newPureMT
 let resEnv = seed <> Map.delete "y" sdata <> mcmcToEnv res
     simEnv = runSimulateOnce linRegression resEnv
-    newY = zip (unPairDoubles $ fromJust $ Map.lookup "x" simEnv) (unDoubles $ fromJust $ Map.lookup "y" simEnv)
+    simEnvs = runSimulate 100 linRegression resEnv
+    postPredOnce = zip (unPairDoubles $ fromJust $ Map.lookup "x" simEnv) (unDoubles $ fromJust $ Map.lookup "y" simEnv)
+    avgYs = avgVar simEnvs "y"
+    residuals = zip (unPairDoubles $ fromJust $ Map.lookup "x" sdata)
+                    $ zipWith (-) (unDoubles $ fromJust $ Map.lookup "y" sdata)
+                                  (unDoubles avgYs)
+
 ```
 
 
@@ -123,24 +129,15 @@ plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
 ```
 
 ```haskell eval
-plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
+plotly "bhpp" [points (aes & x .~ (fst . fst) & y .~ snd) postPredOnce]
 ```
 
+
 ```haskell eval
-plotly "bhpp" [points (aes & x .~ (fst . fst) & y .~ snd) newY]
+plotly "bhres" [points (aes & x .~ (fst . fst) & y .~ snd) residuals]
 ```
+
 
 ```haskell eval
 postPlotRow res ["beta.1", "beta.2" ] :: Html ()
-```
-
-```haskell eval
-show $ Map.lookup "x" simEnv
-
-```
-
-
-```haskell eval
-show $ Map.lookup "y" simEnv
-
 ```
