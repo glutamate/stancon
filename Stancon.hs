@@ -39,10 +39,29 @@ other interfaces to Stan in any language.
 
 ## The Haskell programming language
 
-Haskell is a lazy statically typed purely functional programming language…
+Haskell is a pure, statically typed, general purpose functional
+language with lazy evaluation. It is widely used in academia for
+teaching and research, and increasingly for commercial software
+development as Haskell is conducive to rapid development of reliable
+code. Purity means that functions have no side effects, except where
+explicitly reflected in the function type, and then only those effects
+that are explicitly permitted by the type in question. This enforced
+effect discipline, in combination with a sophisticated and expressive
+type system, makes it a lot easier to understand and maintain code,
+especially when it grows large. Purity also makes simple equational
+reasoning possible, making Haskell a particularly good fit for
+mathematical applications. Lazy evaluation means that computation is
+demand driven. This, to a large extent, frees the programmer from
+operational concerns, allowing them to focus on stating what to
+compute rather than how to do it. This also makes for a good fit for
+mathematical applications.
 
-Particularly suited for compilers and domain specific languages...
-
+Haskell is further known for its concise yet flexible syntax, which,
+in combination with functions being first-class entities makes Haskell
+very popular as a host for embedded domain-specific languages.
+Additionally, thanks to its powerful type system, it is often possible
+to enforce domain-specific typing constraints. This is another reason
+for Haskell's popularity as a language host.
 
 ```html_header
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
