@@ -2,15 +2,20 @@
 
 # Getting more out of Stan: some ideas from the Haskell bindings
 
+Thomas A Nielsen<sup>1</sup>, Dominic Steinitz<sup>1</sup> and Henrik Nilsson<sup>2</sup>
+
+1. Tweag I/O
+2. School of Computer Science, University of Nottingham
+
 ## Introduction
 
 Probabilistic programming is one of the most promising developments in statistical computing in recent times.
 By combining programming languages theory with statistical modelling, it empowers modellers with a flexible
 framework for statistical computing in which a great variety of models can be expressed using composition of
-arbitrary probability distributions within loop structures to express dependencies and data structure known
-to or hypothesised by the modeller.
+arbitrary probability distributions within flexible control flow to express dependencies and data structure known
+to, or hypothesised by, the modeller.
 
-Probabilistic programming is distinguished from stochastic programming by the ability to condition the random
+Probabilistic programming is distinguished from stochastic programming by the capability to condition the random
 variables on observed data, that is essentially to perform the Bayesian update and move from prior to posterior
 distributions. Nevertheless, probabilistic programming in its full power is not restricted only to calculating
 the posterior. Computations based on this posterior may be more directly relevant to the data analyst or to the
@@ -26,16 +31,22 @@ decision maker and often require further probabilistic calculations. For instanc
 Stan has emerged as the most practical and widely used probabilistic programming language for Bayesian computation.
 In its canonical form, Stan only calculates the posterior and leaves all further analysis to generic programming
 languages. Some calculations can be done within Stan alone, but these are quite limited and tricky to apply. Most
-often, post-posterior calculations are deferred to the host programming language, for instance Python or R, where
-the model is rewritten to simulate. This has the disadvantage that the two models may become out of sync and some
-probability distributions may be parameterised in different ways.
+often, post-posterior calculations are deferred to the host programming language, for instance Python or R. For
+instance, to calculate residuals or to make predictions in a predictive model, one must write the model twice:
+once in the Stan modelling language, for inference, and once in the host language, for simulation and prediction.
+This has the disadvantage that the two models may become out of sync and some
+probability distributions may be parameterised in different ways. This is not much work for simple models, such as
+linear regression model; the reader may feel that the author doth protest too much. But for more complex models
+it may not at all be obvious how to transfer the posterior into a simulation environment.
 
 Here, we present the results of some experiments with creating bindings (https://github.com/diffusionkinetics/open/tree/master/stanhs)
 to Stan in Haskell, a purely functional
 and statically typed programming language. Rather than present “yet another Stan binding” or even worse, try to
 persuade the reader to abandon their current programming language and learn Haskell, our aim here is to present
 some ideas enable a richer set of probabilistic computations from Stan models. These ideas can be implemented in
-other interfaces to Stan in any language.
+other interfaces to Stan in any language. Nevertheless, we have chosen here to explore these ideas in Haskell
+due to its support for embedded languages, ease of re-factoring experimental code, and its emerging data science
+ecosystem.
 
 ## The Haskell programming language
 
@@ -62,6 +73,20 @@ very popular as a host for embedded domain-specific languages.
 Additionally, thanks to its powerful type system, it is often possible
 to enforce domain-specific typing constraints. This is another reason
 for Haskell's popularity as a language host.
+
+For a data scientist or statistician, the Haskell language holds several
+attractions. Most importantly, Haskell now has an ecosystem and a community
+for data science and numerical computing that is, if not best in class, then
+increasingly productive with many packages implementing different methods,
+in particular for a general purpose programming language that was not designed
+with numerical computing in mind. On a spectrum of data science needs, Haskell
+is particularly suited to productizing models that have been developed in
+languages or environments that may be more suited for explorative data analysis.
+The inline-r project, for instance, gives Haskell programmers direct access to
+all of the R programming language, facilitating moving data science into a
+production environment. Haskell’s type system makes it very simple to re-factor
+large code bases which may blur the boundary between data science and software
+engineering.
 
 ```html_header
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -220,5 +245,34 @@ let simEnvs = runSimulate 100 linRegression resEnv
 ```haskell eval
 plotly "bhres" [points (aes & x .~ (fst . fst) & y .~ snd) residuals]
 ```
+
+## Discussion
+
+We have shown prototype bindings to Stan in the Haskell language. Unlike other such bindings, our model definition is a data
+type in the host language. This enables us to simulate from the model with fine control over the model parameters which may c
+ome from a posterior following inference.
+
+Simulation with fine control over the provenance of the parameter distribution has several advantages. We have already shown
+how it can be used to define the residuals and how to simulate from the posterior predictive distribution. In many cases, such
+an instruction to simulate from the posterior predictive distribution will be incompletely specified. For instance, if we are
+dealing with a hierarchical regression model, should the posterior predictive distribution retain the group identities? One
+posterior predictive simulation would have entirely new groups, while another could have new individuals but drawn from groups
+that are specified from the data.
+
+### Further work
+
+The Haskell interface to Stan we have shown here is an incomplete prototype. The model definition language can be polished
+to reduce the amount of syntactic noise. Ideally, we would also have the ability to parse models written in the standard Stan
+language. We can also make it much easier to move data into Stan, and to parse data from the posterior samples and from the
+simulation environment. This will be facilitated when the Haskell data science community converges on one of the several
+proposed implementations of data frames.
+
+
+## About this document
+
+The code for this document is hosted on GitHub (https://github.com/glutamate/stancon). It is written using the inliterate
+notebook format which allows a mixture of code, text writing, and the result of running code. Compared to Jupyter notebooks,
+it is less interactive (there is no caching) and it emphasises a cleaner, human- readable source format that can be checked
+into version control. Plots are generated with Plotly.js.
 
 

@@ -4,10 +4,11 @@
 
 1. clone this repository (stancon) and the open repository (https://github.com/diffusionkinetics/open) in the same directory (see how in stack.yaml the subdirectories in the open repository are referenced).
 2. Install Stan (see below)
-3. `cd stancon`
-4. `stack install`
-5. `stancon >stancon.html`
-6. now you can open `stancon.html` in a web browser. For instance, you could enter at the command line: `firefox stancon.html’
+3. Install Haskell Stack (https://docs.haskellstack.org/en/stable/install_and_upgrade/)
+4. `cd stancon`
+5. `stack install`
+6. `stancon >stancon.html`
+7. now you can open `stancon.html` in a web browser. For instance, you could enter at the command line: `firefox stancon.html’
 
 The paper is using the inliterate system (https://github.com/diffusionkinetics/open/tree/master/inliterate)
 
