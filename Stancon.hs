@@ -271,7 +271,8 @@ proposed implementations of data frames.
 ## About this document
 
 The code for this document is hosted on GitHub (https://github.com/glutamate/stancon). It is written using the inliterate
-notebook format which allows a mixture of code, text writing, and the result of running code. Compared to Jupyter notebooks,
+notebook format (https://github.com/diffusionkinetics/open/tree/master/inliterate) which allows a mixture of code, text
+writing, and the result of running code. Compared to Jupyter notebooks,
 it is less interactive (there is no caching) and it emphasises a cleaner, human- readable source format that can be checked
 into version control. Plots are generated with Plotly.js.
 
