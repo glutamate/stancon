@@ -1,0 +1,101 @@
+Bibliography for the paper, both as bibtex and plain text.
+
+----------
+
+@InProceedings{Augustsson2008,
+ author =       "Augustsson, Lennart and Mansell, Howard
+                 and Sittampalam, Ganesh",
+ title =        "{P}aradise: a two-stage {DSL} embedded in {H}askell",
+ booktitle =    "Proceeding of the 13th {ACM SIGPLAN} International
+                 Conference on Functional Programming ({ICFP'08})",
+ year =         2008,
+ pages =        "225--228",
+ location =     "Victoria, BC, Canada",
+ publisher =    "{ACM}",
+ address =      "New York, NY, USA"
+}
+
+Lennart Augustsson, Howard Mansell, and Ganesh Sittampalam. Paradise: a
+two-stage DSL embedded in Haskell.  In ICFP '08: Proceeding of the 13th
+ACM SIG-PLAN  international  conference  on  Functional  programming, pages 225{228, New York, NY, USA, 2008. ACM.
+
+----------
+
+@InProceedings{Giorgidze2011a,
+  author =       "George Giorgidze and Henrik Nilsson",
+  title =        "Mixed-level Embedding and {JIT} Compilation for an
+                  Iteratively Staged {DSL}",
+  booktitle =    "Proceedings of the 19th {W}orkshop on {F}unctional and
+                  (Constraint) {L}ogic {P}rogramming ({WFLP 2010})",
+  pages =        "48--65",
+  year =         2011,
+  editor =       "Mari\~{n}o, Julio",
+  volume =       "6559",
+  series =       "Lecture Notes in Computer Science",
+  publisher =    "Springer-Verlag"
+}
+
+Mixed-level Embedding and JIT Compilation for an Iteratively Staged DSL. In Julio Mariño, editor, Proceedings of the 19th Workshop on Functional and (Constraint) Logic Programming (WFLP 2010), volume 6559 of Lecture Notes in Computer Science, pages 48~65, Springer-Verlag, 2011.
+
+----------
+
+@inproceedings{Mainland2007,
+ author = {Mainland, Geoffrey},
+ title = {Why It's Nice to Be Quoted: Quasiquoting for Haskell},
+ booktitle = {Proceedings of the ACM SIGPLAN Workshop on Haskell Workshop},
+ series = {Haskell '07},
+ year = {2007},
+ isbn = {978-1-59593-674-5},
+ location = {Freiburg, Germany},
+ pages = {73--82},
+ numpages = {10},
+ url = {http://doi.acm.org/10.1145/1291201.1291211},
+ doi = {10.1145/1291201.1291211},
+ acmid = {1291211},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {meta programming, quasiquoting},
+} 
+
+Geoffrey Mainland. 2007. Why it's nice to be quoted: quasiquoting for haskell. In Proceedings of the ACM SIGPLAN workshop on Haskell workshop (Haskell '07). ACM, New York, NY, USA, 73-82. DOI: https://doi.org/10.1145/1291201.1291211 
+
+----------
+
+@InProceedings{Svenningsson2013,
+  author =       "Josef Svenningsson and Emil Axelsson",
+  title =        "Combining Deep and Shallow Embedding for {EDSL}",
+  booktitle =    "Trends in Functional Programming (TFP) 2012, Revised
+                  Selected Papers",
+  pages =        "21--36",
+  year =         2013,
+  volume =       7829,
+  series =       "Lecture Notes in Computer Science",
+  publisher =    "Springer-Verlag"
+}
+
+J. Svenningsson and E. Axelsson. Combining deep and
+shallow embedding for EDSL. In Trends in Functional
+Programming (TFP) 2012, Revised Selected Papers,
+volume 7829 of Lecture Notes in Computer Science,
+pages 21~36, 2013.
+
+----------
+
+@article{Thiemann2002,
+title = "Programmable Type Systems for Domain Specific Languages",
+journal = "Electronic Notes in Theoretical Computer Science",
+volume = "76",
+pages = "233 - 251",
+year = "2002",
+note = "WFLP 2002, 11th International Workshop on Functional and (Constraint) Logic Programming, Selected Papers",
+issn = "1571-0661",
+doi = "https://doi.org/10.1016/S1571-0661(04)80796-5",
+url = "http://www.sciencedirect.com/science/article/pii/S1571066104807965",
+author = "Peter Thiemann"
+}
+
+Peter Thiemann,  Programmable Type Systems for Domain Specific Languages,
+Electronic Notes in Theoretical Computer Science,  Volume 76,  2002,
+Pages 233-251,  ISSN 1571-0661,
+https://doi.org/10.1016/S1571-0661(04)80796-5.
+(http://www.sciencedirect.com/science/article/pii/S1571066104807965)
