@@ -80,9 +80,12 @@ compiler applications. In the setting of embedded domain-specific
 languages, this allows for a spectrum of implementation strategies,
 from interpretation to compilation, as well as programmatic
 construction of programs in the domain-specific language, often
-referred to as metaprogramming. Finally, thanks to its powerful type
+referred to as metaprogramming or metamodelling
+CITE{Augustsson2008,Giorgidze2011a,Svenningsson2013}.
+Finally, thanks to its powerful type
 system, it is often possible to enforce domain-specific typing
-constraints. We will see some of these features being put to good use
+constraints CITE{Thiemann2002}.
+We will see some of these features being put to good use
 in the following.
 
 For a data scientist or statistician, the Haskell language holds
@@ -130,11 +133,20 @@ import qualified Data.Random as R
 import Data.Random.Source.PureMT
 ```
 
-Unlike in other Stan interfaces, in our prototype interface the Stan model itself is described in a data structure
-in the host language, here in Haskell. This has the disadvantage that the Stan file has slightly more syntactic
-noise and is less familiar. However, the Stan model description is now a value in a programming language that can
-be manipulated and calculated based on the circumstances; and for further advantages that will become apparent later
-in this paper. In our current implementation, the Stan model value looks like this:
+Unlike in other Stan interfaces, in our prototype interface the Stan
+model itself is described in a data structure in the host language,
+here in Haskell. This has the disadvantage that the Stan file has
+slightly more syntactic noise and is less familiar. However, the Stan
+model description is now a value in a programming language that can be
+manipulated and calculated based on the circumstances, a form of
+metamodelling as discussed in the previous section. There are also
+other advantages that will become apparent later in this paper. 
+Moreover, there are a number of ways in Haskell to reduce the
+syntactic noise by making the model look more like plain Stan code
+should that be desired in a more mature implementation; e.g. 
+quasiquoting CITE{Mainland2007}.
+
+In our current implementation, the Stan model value looks like this:
 
 ```haskell top
 linRegression :: [Stan]
