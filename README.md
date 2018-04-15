@@ -2,7 +2,7 @@
 
 ## Build instructions
 
-1. clone this repository (stancon) and the open repository (https://github.com/diffusionkinetics/open) in the same directory (see how in stack.yaml the subdirectories in the open repository are referenced).
+1. clone this repository (stancon)
 2. Install Stan (see below)
 3. Install Haskell Stack (https://docs.haskellstack.org/en/stable/install_and_upgrade/)
 4. `cd stancon`
@@ -23,3 +23,5 @@ sudo mv cmdstan-2.17.0 /opt/stan
 (cd /opt/stan && sudo make build -j4)
 rm cmdstan-2.17.0.tar.gz
 ```
+
+If you have installed Stan in a different directory than /opt/stan, then set the environment variable CMDSTAN_HOME must point to the directory in which you have installed cmdstan
