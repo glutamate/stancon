@@ -205,7 +205,7 @@ plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
 To put this into the Stan data format, we create values of the `StanEnv` type using the custom infix operator `<~`. Haskell allows library
 programmers to define their own infix operators describing the model. Here, we have defined `v <~ d` to mean, create a Stan environment
 where the variable named v holds the data contained in the Haskell variable d. `d` can be any type for which we have defined how to turn
-values into Stan values (that is, implemented the `ToStanData` type class. We concatenate these elementary Stan environments using the
+values into Stan values (that is, implemented the `ToStanData` type class). We concatenate these elementary Stan environments using the
 append operator `<>`.
 
 ```haskell do
