@@ -163,6 +163,8 @@ Here, we plot the median value against the number of rooms in a residence:
 
 ```haskell eval
 plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
+   & layout %~ yaxis ?~ (defAxis & axistitle ?~ "Median Value")
+   & layout %~ xaxis ?~ (defAxis & axistitle ?~ "Rooms")
 ```
 To put this into the Stan data format, we create values of the `StanEnv` type using the custom infix operator `<~`. Haskell allows library
 programmers to define their own infix operators describing the model. Here, we have defined `v <~ d` to mean, create a Stan environment
@@ -221,6 +223,8 @@ let resEnv = seed <> Map.delete "y" sdata <> mcmcToEnv res
 
 ```haskell eval
 plotly "bhpp" [points (aes & x .~ (fst . fst) & y .~ snd) postPredOnce]
+     & layout %~ yaxis ?~ (defAxis & axistitle ?~ "Median Value")
+     & layout %~ xaxis ?~ (defAxis & axistitle ?~ "Rooms")
 ```
 
 This simulation facility can be used for a common operation in model criticism: calculating residuals.very often, residuals are
@@ -244,6 +248,8 @@ let simEnvs = runSimulate 100 linRegression resEnv
 
 ```haskell eval
 plotly "bhres" [points (aes & x .~ (fst . fst) & y .~ snd) residuals]
+      & layout %~ yaxis ?~ (defAxis & axistitle ?~ "Median Value Residual")
+      & layout %~ xaxis ?~ (defAxis & axistitle ?~ "Rooms")
 ```
 
 ## Discussion
