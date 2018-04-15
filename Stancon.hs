@@ -222,7 +222,7 @@ that specifies whether we are sampling or optimising the posterior. The resultin
 ```haskell do
 res <- runStan linRegression sdata sample {numSamples = 500}
 ```
-At this point the components of the posterior can be plotted as usual.
+At this point the components of the posterior can be plotted as usual:
 
 ```haskell eval
 postPlotRow res ["beta.1", "beta.2", "sigma" ] :: Html ()
@@ -230,8 +230,8 @@ postPlotRow res ["beta.1", "beta.2", "sigma" ] :: Html ()
 
 In order to obtain a richer probabilistic programming capability based on the Bayesian update in Stan, it suffices to
 add a function to simulate from a probabilistic model with fine control over the transfer of information from the posterior to
-the simulation environment. By transferring no information, we are simulating from the prior (prior predictive distribution);
-all information, we are simulating from the posterior (posterior predictive distribution). And by controlling the independent
+the simulation environment. By transferring no information, we are simulating from the prior (prior predictive distribution); by transferring
+all information, we are simulating from the posterior (posterior predictive distribution). Moreover, by controlling the independent
 variables in the dataset we can make predictions for new observations. In the case of timeseries modelling, by manipulating the
 starting value we can continue a simulation from the endpoint of observed data (that is, forecast). Crucially, we are proposing
 that all of these functions are possible without writing the model twice as is usual: once in Stan, and once in the host language.
