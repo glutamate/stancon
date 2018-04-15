@@ -215,7 +215,7 @@ let sdata = "y" <~ map medianValue bh <>
             "p" <~ (2 :: Int)
 ```
 Finally, we run the Stan model using the `runStan` function taking as arguments the model, the data value and a configuration value
-that can specify that we are sampling or optimising the posterior. The resulting posterior will be bound to the variable `res`.
+that specifies whether we are sampling or optimising the posterior. The resulting posterior will be bound to the variable `res`.
 
 ```haskell do
 res <- runStan linRegression sdata sample {numSamples = 500}
