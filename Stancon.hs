@@ -31,7 +31,7 @@ decision maker and often require further probabilistic calculations. For instanc
 Stan has emerged as the most practical and widely used probabilistic programming language for Bayesian computation.
 In its canonical form, Stan only calculates the posterior and leaves all further analysis to generic programming
 languages. Some calculations can be done within Stan alone, but these are quite limited and tricky to apply. Most
-often, post-posterior calculations are deferred to the host programming language, for instance Python or R. For
+often, post-posterior calculations are deferred to the host programming language such as Python or R. For
 instance, to calculate residuals or to make predictions in a predictive model, one must write the model twice:
 once in the Stan modelling language, for inference, and once in the host language, for simulation and prediction.
 This has the disadvantage that the two models may become out of sync and some
