@@ -109,7 +109,7 @@ import Numeric.Datasets
 import Lens.Micro
 import Data.Monoid
 import Data.Maybe
-import Data.Text (unpack)
+import Data.Text (unpack, pack)
 import Lucid
 import Lucid.Bootstrap
 import Lucid.Bootstrap3
@@ -150,7 +150,7 @@ getRow b = [rooms b, crimeRate b]
 
 
 postPlotRow post vnms = row_ $ rowEven MD $ flip map vnms $ \vnm -> toHtml (plotly vnm [histogram 50 $ fromJust $ Map.lookup (unpack vnm) post]
-   & (layout . margin) ?~ thinMargins & (layout . height) ?~ 300)
+   & (layout . margin) ?~ titleMargins & (layout . height) ?~ 300 & (layout . title) ?~ (vnm))
 ```
 Then, we have two also create the data structure holding the data input to Stan. Here is an example we will use the Boston Housing dataset found
 in the datasets Haskell package. We load this into the `bh` variable which will hold a list of records describing Boston housing data (`bh :: [BostonHousing]`)
