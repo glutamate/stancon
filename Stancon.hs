@@ -211,7 +211,7 @@ At this point the components of the posterior can be plotted as usual.
 postPlotRow res ["beta.1", "beta.2", "sigma" ] :: Html ()
 ```
 
-we propose that in order to a richer probabilistic programming capability based on the Bayesian update in Stan, it suffices to
+In order to obtain a richer probabilistic programming capability based on the Bayesian update in Stan, it suffices to
 add a function to simulate from a probabilistic model with fine control over the transfer of information from the posterior to
 the simulation environment. By transferring no information, we are simulating from the prior (prior predictive distribution);
 all information, we are simulating from the posterior (posterior predictive distribution). And by controlling the independent
