@@ -42,9 +42,11 @@ it may not at all be obvious how to transfer the posterior into a simulation env
 Here, we present the results of some experiments with creating bindings (https://github.com/diffusionkinetics/open/tree/master/stanhs)
 to Stan in Haskell, a purely functional
 and statically typed programming language. Rather than present “yet another Stan binding” or even worse, try to
-persuade the reader to abandon their current programming language and learn Haskell, our aim here is to present
-some ideas enable a richer set of probabilistic computations from Stan models. These ideas can be implemented in
-other interfaces to Stan in any language. Nevertheless, we have chosen here to explore these ideas in Haskell
+persuade the reader to abandon their current programming language and learn Haskell, our aim here is to present some ideas enable a richer set of probabilistic computations from Stan models. This obviates the need
+to also implement the model in the host language, thus addressing the
+above problem with existing bindings. Our ideas are general and could,
+in principle, be leveraged to improve existing interfaces to Stan. 
+Nevertheless, we have chosen here to explore these ideas in Haskell
 due to its support for embedded languages, ease of re-factoring experimental code, and its emerging data science
 ecosystem.
 
