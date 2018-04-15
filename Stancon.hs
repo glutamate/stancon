@@ -17,20 +17,21 @@ to, or hypothesised by, the modeller.
 
 Probabilistic programming is distinguished from stochastic programming by the capability to condition the random
 variables on observed data; essentially to perform the Bayesian update and move from prior to posterior
-distributions. Nevertheless, probabilistic programming in its full power is not restricted only to calculating
+distributions. Sometimes the posterior suffices. For instance, a causal link may be predicated on a certain regression
+coefficient being non-zero. Nevertheless, probabilistic programming in its full power is not restricted only to calculating
 the posterior. Computations based on this posterior may be more directly relevant to the data analyst or to the
 decision maker and often require further probabilistic calculations. For instance:
 
 * predicting outcomes based on new observations
-* model criticism based on residuals or posterior predictive
-* forecasting
+* model criticism based on residuals or the posterior predictive distribution
+* forecasting timeseries
 * risk analysis
 * decision-making
 * resource allocation
 
 Stan has emerged as the most practical and widely used probabilistic programming language for Bayesian computation.
 In its canonical form, Stan only calculates the posterior and leaves all further analysis to generic programming
-languages. Some calculations can be done within Stan alone, but these are quite limited and tricky to apply. Most
+languages. Some further calculations can be done within Stan alone, but these are quite limited and tricky to apply. Most
 often, post-posterior calculations are deferred to the host programming language such as Python or R. For
 instance, to calculate residuals or to make predictions in a predictive model, one must write the model twice:
 once in the Stan modelling language, for inference, and once in the host language, for simulation and prediction.
@@ -84,10 +85,10 @@ languages, this allows for a spectrum of implementation strategies,
 from interpretation to compilation, as well as programmatic
 construction of programs in the domain-specific language, often
 referred to as metaprogramming or metamodelling
-(Augustsson 2008, Giorgidze 2011a, Svenningsson 2013).
+(Augustsson et al, 2008; Giorgidze and Nilsson, 2011; Svenningsson and Axelsson, 2013).
 Finally, thanks to its powerful type
 system, it is often possible to enforce domain-specific typing
-constraints (Thiemann 2002).
+constraints (Thiemann, 2002).
 We will see some of these features being put to good use
 in the following.
 
@@ -99,8 +100,8 @@ implementing different methods, in particular for a general purpose
 programming language that was not designed with numerical computing in
 mind. On a spectrum of data science needs, Haskell is particularly
 suited to productizing models that have been developed in languages or
-environments that may be more suited for explorative data analysis.
-The inline-r project, for instance, gives Haskell programmers direct
+environments that may be more suited for exploratory data analysis.
+The [inline-r](https://tweag.github.io/HaskellR/) project, for instance, gives Haskell programmers direct
 access to all of the R programming language, facilitating moving data
 science into a production environment. Haskell’s type system makes it
 very simple to re-factor large code bases which may blur the boundary
@@ -148,7 +149,7 @@ other advantages that will become apparent later in this paper.
 Moreover, there are a number of ways in Haskell to reduce the
 syntactic noise by making the model look more like plain Stan code
 should that be desired in a more mature implementation; e.g.
-quasiquoting (Mainland 2007).
+quasiquoting (Mainland, 2007).
 
 In our current implementation, the Stan model value looks like this:
 
@@ -181,15 +182,12 @@ ppStans linRegression
 ```
 
 ```haskell top hide
-getRow b = [rooms b, crimeRate b]
-
-
 postPlotRow post vnms = row_ $ rowEven MD $ flip map vnms $ \vnm -> toHtml (plotly vnm [histogram 50 $ fromJust $ Map.lookup (unpack vnm) post]
    & (layout . margin) ?~ titleMargins & (layout . height) ?~ 300 & (layout . title) ?~ (vnm))
 ```
 We then have to create the data structure holding the input to Stan.
 Here, as an example, we will use the Boston Housing dataset from the
-datasets Haskell package. We load this into the `bh` variable which
+[datasets](http://hackage.haskell.org/package/datasets) Haskell package. We load this into the `bh` variable which
 will hold a list of records describing Boston housing data (`bh ::
 [BostonHousing]`)
 
@@ -210,7 +208,9 @@ values into Stan values (that is, implemented the `ToStanData` type class). We c
 append operator `<>`.
 
 ```haskell do
-let sdata = "y" <~ map medianValue bh <>
+let getRow b = [rooms b, crimeRate b]
+
+    sdata = "y" <~ map medianValue bh <>
             "x" <~ map getRow bh <>
             "n" <~ length bh <>
             "p" <~ (2 :: Int)
@@ -226,6 +226,7 @@ At this point the components of the posterior can be plotted as usual:
 ```haskell eval
 postPlotRow res ["beta.1", "beta.2", "sigma" ] :: Html ()
 ```
+## Simulating From a Stan Model
 
 In order to obtain a richer probabilistic programming capability based on the Bayesian update in Stan, it suffices to
 add a function to simulate from a probabilistic model with fine control over the transfer of information from the posterior to
@@ -264,20 +265,21 @@ plotly "bhpp" [points (aes & x .~ (fst . fst) & y .~ snd) postPredOnce]
      & layout %~ xaxis ?~ (defAxis & axistitle ?~ "Rooms")
 ```
 
-This simulation facility can be used for a common operation in model criticism: calculating residuals.very often, residuals are
+This simulation facility can be used for a common operation in model criticism: calculating residuals. Often, residuals are
 calculated by averaging the posterior parameters (or using a point estimate), making a single prediction and subtracting this
 from the observed outcome. Here, we argue that this is incorrect. From a Bayesian point of view, it almost never makes sense
 to average the parameters. Instead, the parameters, the predicted outcome and the residuals themselves are all probability
 distributions. In order to achieve something plottable, we average the predicted outcome over all the Markov chain Monte Carlo
-samples and subtract this average prediction from the observed outcome. This has the advantage that in case of banana shaped or
- multimodal posteriors (arising, for instance from lack of identifiability) the average prediction still has more meaning than
- the average parameter value.
+samples and subtract this average prediction from the observed outcome. This has the advantage that in case of banana-shaped or
+multimodal posteriors (arising, for instance from lack of identifiability) the average prediction is more meaningful than
+the prediction with the average parameter value.
 
 
 ```haskell do
 let simEnvs = runSimulate 100 linRegression resEnv
 
-    avgYs = avgVar simEnvs "y"
+    avgYs = avgVar simEnvs "y"    -- the average prediction
+
     residuals = zip (unPairDoubles $ fromJust $ Map.lookup "x" sdata)
                     $ zipWith (-) (unDoubles $ fromJust $ Map.lookup "y" sdata)
                                   (unDoubles avgYs)
@@ -292,8 +294,8 @@ plotly "bhres" [points (aes & x .~ (fst . fst) & y .~ snd) residuals]
 ## Discussion
 
 We have shown prototype bindings to Stan in the Haskell language. Unlike other such bindings, our model definition is a data
-type in the host language. This enables us to simulate from the model with fine control over the model parameters which may c
-ome from a posterior following inference.
+type in the host language. This enables us to simulate from the model with fine control over the model parameters which may
+come from a posterior following inference.
 
 Simulation with fine control over the provenance of the parameter distribution has several advantages. We have already shown
 how it can be used to define the residuals and how to simulate from the posterior predictive distribution. In many cases, such
@@ -310,6 +312,9 @@ language. We can also make it much easier to move data into Stan, and to parse d
 simulation environment. This will be facilitated when the Haskell data science community converges on one of the several
 proposed implementations of data frames.
 
+Representing a Stan model in a data structure opens other possibilities. We plan to implement a function to combine two different
+models by specifying a list of the parameters that are common in the two models. Thus, two different manifestations of the same
+underlying constants can be investigated independently before the evidence is combined.
 
 ## About this document
 
@@ -329,8 +334,8 @@ ACM SIG-PLAN  international  conference  on  Functional  programming, pages 225-
 George Giorgidze and Henrik Nilsson. Mixed-level Embedding and JIT Compilation for an Iteratively Staged DSL. In Julio Mariño, editor, Proceedings of the 19th
 Workshop on Functional and (Constraint) Logic Programming (WFLP 2010), volume 6559 of Lecture Notes in Computer Science, pages 48–65, Springer-Verlag, 2011.
 
-Mainland, G. 2007. Why It’s Nice to Be Quoted: Quasiquoting for Haskell. Proceedings of the ACM
-SIGPLAN Workshop on Haskell (Haskell ’07) (Freiburg, Germany, Sep. 2007), 73–82.
+Geoffrey Mainland. 2007. Why it's nice to be quoted: quasiquoting for haskell. In Proceedings of the ACM SIGPLAN workshop on Haskell workshop (Haskell '07).
+ACM, New York, NY, USA, 73-82.
 
 J. Svenningsson and E. Axelsson. Combining deep and
 shallow embedding for EDSL. In Trends in Functional
