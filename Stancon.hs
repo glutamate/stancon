@@ -39,10 +39,11 @@ probability distributions may be parameterised in different ways. This is not mu
 linear regression model; the reader may feel that the author doth protest too much. But for more complex models
 it may not at all be obvious how to transfer the posterior into a simulation environment.
 
-Here, we present the results of some experiments with creating bindings (https://github.com/diffusionkinetics/open/tree/master/stanhs)
-to Stan in Haskell, a purely functional
+Here, we present the results of some experiments with creating [bindings to Stan in Haskell](https://github.com/diffusionkinetics/open/tree/master/stanhs),
+a purely functional
 and statically typed programming language. Rather than present “yet another Stan binding” or even worse, try to
-persuade the reader to abandon their current programming language and learn Haskell, our aim here is to present some ideas enable a richer set of probabilistic computations from Stan models. This obviates the need
+persuade the reader to abandon their current programming language and learn Haskell, our aim here is to present
+some ideas enable a richer set of probabilistic computations from Stan models. This obviates the need
 to also implement the model in the host language, thus addressing the
 above problem with existing bindings. Our ideas are general and could,
 in principle, be leveraged to improve existing interfaces to Stan.
@@ -83,10 +84,10 @@ languages, this allows for a spectrum of implementation strategies,
 from interpretation to compilation, as well as programmatic
 construction of programs in the domain-specific language, often
 referred to as metaprogramming or metamodelling
-CITE{Augustsson2008,Giorgidze2011a,Svenningsson2013}.
+(Augustsson 2008, Giorgidze 2011a, Svenningsson 2013).
 Finally, thanks to its powerful type
 system, it is often possible to enforce domain-specific typing
-constraints CITE{Thiemann2002}.
+constraints (Thiemann 2002).
 We will see some of these features being put to good use
 in the following.
 
@@ -147,7 +148,7 @@ other advantages that will become apparent later in this paper.
 Moreover, there are a number of ways in Haskell to reduce the
 syntactic noise by making the model look more like plain Stan code
 should that be desired in a more mature implementation; e.g.
-quasiquoting CITE{Mainland2007}.
+quasiquoting (Mainland 2007).
 
 In our current implementation, the Stan model value looks like this:
 
@@ -312,10 +313,31 @@ proposed implementations of data frames.
 
 ## About this document
 
-The code for this document is hosted on GitHub (https://github.com/glutamate/stancon). It is written using the inliterate
-notebook format (https://github.com/diffusionkinetics/open/tree/master/inliterate) which allows a mixture of code, text
+The code for this document is [hosted on GitHub](https://github.com/glutamate/stancon). It is written using the [inliterate
+notebook format](https://github.com/diffusionkinetics/open/tree/master/inliterate) which allows a mixture of code, text
 writing, and the result of running code. Compared to Jupyter notebooks,
 it is less interactive (there is no caching) and it emphasises a cleaner, human- readable source format that can be checked
 into version control. Plots are generated with Plotly.js.
 
 
+## References
+
+Lennart Augustsson, Howard Mansell, and Ganesh Sittampalam. Paradise: a
+two-stage DSL embedded in Haskell.  In ICFP '08: Proceeding of the 13th
+ACM SIG-PLAN  international  conference  on  Functional  programming, pages 225-228, New York, NY, USA, 2008. ACM.
+
+George Giorgidze and Henrik Nilsson. Mixed-level Embedding and JIT Compilation for an Iteratively Staged DSL. In Julio Mariño, editor, Proceedings of the 19th
+Workshop on Functional and (Constraint) Logic Programming (WFLP 2010), volume 6559 of Lecture Notes in Computer Science, pages 48–65, Springer-Verlag, 2011.
+
+Mainland, G. 2007. Why It’s Nice to Be Quoted: Quasiquoting for Haskell. Proceedings of the ACM
+SIGPLAN Workshop on Haskell (Haskell ’07) (Freiburg, Germany, Sep. 2007), 73–82.
+
+J. Svenningsson and E. Axelsson. Combining deep and
+shallow embedding for EDSL. In Trends in Functional
+Programming (TFP) 2012, Revised Selected Papers,
+volume 7829 of Lecture Notes in Computer Science,
+pages 21–36, 2013.
+
+Peter Thiemann,  Programmable Type Systems for Domain Specific Languages,
+Electronic Notes in Theoretical Computer Science,  Volume 76,  2002,
+Pages 233-251,  ISSN 1571-0661.
