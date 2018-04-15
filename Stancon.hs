@@ -56,37 +56,49 @@ teaching and research, and increasingly for commercial software
 development as Haskell is conducive to rapid development of reliable
 code. Purity means that functions have no side effects, except where
 explicitly reflected in the function type, and then only those effects
-that are explicitly permitted by the type in question. This enforced
-effect discipline, in combination with a sophisticated and expressive
-type system, makes it a lot easier to understand and maintain code,
-especially when it grows large. Purity also makes simple equational
-reasoning possible, making Haskell a particularly good fit for
-mathematical applications. Lazy evaluation means that computation is
-demand driven. This, to a large extent, frees the programmer from
-operational concerns, allowing them to focus on stating what to
-compute rather than how to do it. This also makes for a good fit for
-mathematical applications.
+that are permitted by the type in question. This enforced effect
+discipline, in combination with an expressive type system, make it a
+lot easier to understand and maintain code, especially when it grows
+large. Purity implies that equational reasoning is valid, making
+Haskell a particularly good fit for mathematical applications. Lazy
+evaluation means that computation is demand driven. This, to a large
+extent, frees the programmer from operational concerns, allowing them
+to focus on stating what to compute rather than how to do it, which is
+another reason for why Haskell is a good fit for mathematical
+applications.
 
-Haskell is further known for its concise yet flexible syntax, which,
-in combination with functions being first-class entities makes Haskell
-very popular as a host for embedded domain-specific languages.
-Additionally, thanks to its powerful type system, it is often possible
-to enforce domain-specific typing constraints. This is another reason
-for Haskell's popularity as a language host.
+One area where Haskell has proved particularly successful is as a host
+language for domain-specific languages. There are a number of reasons
+for this. One is Haskell's concise yet flexible syntax with extensive
+support for overloading of operators and other notation through type
+classes. Another is that all values in Haskell, including functions,
+are first-class; i.e., they can be bound to variables, passed to and
+returned from functions, and so on, greatly facilitating implementing
+appropriate domain-specific abstractions. Haskell is also particularly
+well suited for symbolic computations, like what is needed for
+compiler applications. In the setting of embedded domain-specific
+languages, this allows for a spectrum of implementation strategies,
+from interpretation to compilation, as well as programmatic
+construction of programs in the domain-specific language, often
+referred to as metaprogramming. Finally, thanks to its powerful type
+system, it is often possible to enforce domain-specific typing
+constraints. We will see some of these features being put to good use
+in the following.
 
-For a data scientist or statistician, the Haskell language holds several
-attractions. Most importantly, Haskell now has an ecosystem and a community
-for data science and numerical computing that is, if not best in class, then
-increasingly productive with many packages implementing different methods,
-in particular for a general purpose programming language that was not designed
-with numerical computing in mind. On a spectrum of data science needs, Haskell
-is particularly suited to productizing models that have been developed in
-languages or environments that may be more suited for explorative data analysis.
-The inline-r project, for instance, gives Haskell programmers direct access to
-all of the R programming language, facilitating moving data science into a
-production environment. Haskell’s type system makes it very simple to re-factor
-large code bases which may blur the boundary between data science and software
-engineering.
+For a data scientist or statistician, the Haskell language holds
+several attractions. Most importantly, Haskell now has an ecosystem
+and a community for data science and numerical computing that is, if
+not best in class, then increasingly productive with many packages
+implementing different methods, in particular for a general purpose
+programming language that was not designed with numerical computing in
+mind. On a spectrum of data science needs, Haskell is particularly
+suited to productizing models that have been developed in languages or
+environments that may be more suited for explorative data analysis. 
+The inline-r project, for instance, gives Haskell programmers direct
+access to all of the R programming language, facilitating moving data
+science into a production environment. Haskell’s type system makes it
+very simple to re-factor large code bases which may blur the boundary
+between data science and software engineering.
 
 ```html_header
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
