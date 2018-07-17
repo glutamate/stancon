@@ -317,7 +317,9 @@ let -- simulate 100 datasets
 
 Here we simulate 100 sets of predicted outcomes, that is 100 different outcome vectors `y`. 
 For each simulated outcome vector index, we average the predictions to obtain a single average 
-predicted outcome vector `avgYs`. 
+predicted outcome vector `avgYs`. From this average prediction, we subtract the observed outcome
+element wise in the list (`zipWith (-)`) and pair these with the dependent variables to facilitate
+plotting.
 
 ```haskell eval
 plotly "bhres" [points (aes & x .~ (fst . fst) & y .~ snd) residuals]
@@ -348,9 +350,11 @@ proposed implementations of data frames.
 
 We currently only support a narrow subset of Stan models for post-posterior processing. Some features are simply not implemented
 in the work in progress we are presenting here, but we see no technical obstacles to doing so. This includes for instance
-vector iced expressions. Other models will be much more difficult to automatically convert to simulation code, for example models
+vectorized expressions, or with a bit more work, ordinary differential equations. For models that have multiple assignments with `~` in separate lines to the same variable, corresponding to multiple observations, the semantics may be somewhat confusing as in the simulation we would effectively be skipping subsequent assignments as these would be treated as observed after they have been drawn on the first assignment. Therefore the simulated variables would only be influenced by the first draw, unless this is explicitly implemented in a different way.
+
+Other models will be much more difficult to automatically convert to simulation code, for example models
 that rely on updating the log posterior using `+=` statements. Simulating posterior predictive data or making predictions from 
-new independent variables from these models would probably require running a new Markov chain.
+new independent variables from these models would probably require running a new Markov chain. Thus simulating from these models would be similar to simulating from the Ising model, which is typically done with MCMC.
 
 Representing a Stan model in a data structure opens other possibilities. We plan to implement a function to combine two different
 models by specifying a list of the parameters that are common in the two models. Thus, two different manifestations of the same
