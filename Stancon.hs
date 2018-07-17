@@ -150,6 +150,9 @@ import Lucid.Bootstrap3
 import qualified Data.Map.Strict as Map
 import qualified Data.Random as R
 import Data.Random.Source.PureMT
+
+deleteVar = Map.delete
+lookupVar k = fromJust . Map.lookup k
 ```
 
 In our prototype interface, the Stan model itself is described in a
@@ -300,10 +303,10 @@ We quickly demonstrate the concept of simulation by simulating a single replica 
 
 ```haskell do
 seed <- seedEnv <$> newPureMT     -- generate seed for random numbers
-let resEnv = seed <> Map.delete "y" sdata <> mcmcToEnv res -- posterior and data with deleted observation
+let resEnv = seed <> deleteVar "y" sdata <> mcmcToEnv res -- posterior and data with deleted observation
     simEnv = runSimulateOnce linRegression resEnv  -- run the simulation
-    postPredOnce = zip (unPairDoubles $ fromJust $ Map.lookup "x" simEnv) 
-                       (unDoubles $ fromJust $ Map.lookup "y" simEnv)
+    postPredOnce = zip (unPairDoubles (lookupVar "x" simEnv))
+                       (unDoubles (lookupVar  "y" simEnv))
 ```
 
 In the first line, we create an environment holding a random seed to be used in a random number generators during the simulation. 
@@ -340,12 +343,12 @@ let -- simulate 100 datasets
     avgYs = avgVar simEnvs "y"   
     
     -- for each average predicted outcome, subtract the observed outcome
-    differences = zipWith (-) (unDoubles $ fromJust $ Map.lookup "y" sdata)
+    differences = zipWith (-) (unDoubles (lookupVar "y" sdata))
                               (unDoubles avgYs)
     
     
     -- zip the residual with the dependent variables to prepare for plot
-    residuals = zip (unPairDoubles $ fromJust $ Map.lookup "x" sdata)
+    residuals = zip (unPairDoubles (lookupVar "x" sdata))
                     differences
 ```
 
