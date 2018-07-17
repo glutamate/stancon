@@ -299,14 +299,25 @@ the prediction with the average parameter value.
 
 
 ```haskell do
-let simEnvs = runSimulate 100 linRegression resEnv
+let -- simulate 100 datasets
+    simEnvs = runSimulate 100 linRegression resEnv
 
-    avgYs = avgVar simEnvs "y"    -- the average prediction
-
+    -- Average the 100 simulations into an average predicted outcome
+    avgYs = avgVar simEnvs "y"   
+    
+    -- for each average predicted outcome, subtract the observed outcome
+    differences = zipWith (-) (unDoubles $ fromJust $ Map.lookup "y" sdata)
+                              (unDoubles avgYs)
+    
+    
+    -- zip the residual with the dependent variables to prepare for plot
     residuals = zip (unPairDoubles $ fromJust $ Map.lookup "x" sdata)
-                    $ zipWith (-) (unDoubles $ fromJust $ Map.lookup "y" sdata)
-                                  (unDoubles avgYs)
+                    $
 ```
+
+Here we simulate 100 sets of predicted outcomes, that is 100 different outcome vectors `y`. 
+For each simulated outcome vector index, we average the predictions to obtain a single average 
+predicted outcome vector `avgYs`. 
 
 ```haskell eval
 plotly "bhres" [points (aes & x .~ (fst . fst) & y .~ snd) residuals]
