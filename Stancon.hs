@@ -29,23 +29,31 @@ decision maker and often require further probabilistic calculations. For instanc
 * decision-making
 * resource allocation
 
-Stan has emerged as the most practical and widely used probabilistic programming language for Bayesian computation.
-In its canonical form, Stan only calculates the posterior and leaves all further analysis to generic programming
-languages. Some further calculations can be done within Stan in a generated quantities block alone, but these are
-quite limited, necessitates repetition and are coupled to the inference so they cannot be calculated independently. Most
-often, post-posterior calculations are deferred to the host programming language such as Python or R. For
-instance, to calculate residuals or to make predictions in a predictive model, one must write the model twice:
-once in the Stan modelling language, for inference, and once in the host language, for simulation and prediction.
-This has the disadvantage that the two models may become out of sync and some
-probability distributions may be parameterised in different ways. This is not much work for simple models, such as
-linear regression model; the reader may feel that the author doth protest too much. But for more complex models
-it may not at all be obvious how to transfer the posterior into a simulation environment.
+Stan has emerged as the most practical and widely used probabilistic 
+programming language for Bayesian computation. In its canonical form,
+Stan essentially only calculates the posterior. While some further
+calculations can be done within Stan in a generated quantities block,
+these are quite limited, necessitates repetition, and are coupled to
+the inference and thus cannot be calculated independently.
+Consequently, further analysis is usually carried out in a generic host
+programming languages like Python or R. Unfortunately, this often leads
+to repetition. For instance, to calculate residuals or to make
+predictions in a predictive model, one must write the model twice: once
+in the Stan modelling language, for inference, and once in the host
+language, for simulation and prediction. This has the disadvantage that
+the two models may become out of sync and some probability
+distributions may be parameterised in different ways. This is not much
+work for simple models, such as linear regression model; the reader may
+feel that the author doth protest too much. But for more complex models
+it may not at all be obvious how to transfer the posterior into
+simulation environment.
 
 Here, we present the results of some experiments with creating [bindings to Stan in Haskell](https://github.com/diffusionkinetics/open/tree/master/stanhs),
 a purely functional
 and statically typed programming language. Rather than present “yet another Stan binding” or even worse, try to
 persuade the reader to abandon their current programming language and learn Haskell, our aim here is to present
-some ideas enable a richer set of probabilistic computations from a subset of Stan models. This obviates the need
+some ideas that enable a richer set of probabilistic computations from 
+a subset of Stan models. This obviates the need
 to also implement the model in the host language, thus addressing the
 above problem with existing bindings. Our ideas are general and could,
 in principle, be leveraged to improve existing interfaces to Stan.
@@ -99,10 +107,10 @@ and a community for data science and numerical computing that is, if
 not as well developed as Python or R, then increasingly productive with many packages
 implementing different methods, in particular for a general purpose
 programming language that was not designed with numerical computing in
-mind. Although Haskell's lazy evaluation model can be more difficult,
-to reason about, this in practice rarely gets in the way of data science work
-and can be disabled in recent Haskell compilers. The expressive type system
-in contrast is an important aid when reasoning about and refactoring code.
+mind. Haskell's lazy evaluation model can make it more difficult to reason 
+about performance, this in practice rarely gets in the way of data science work
+and can be disabled in recent Haskell compilers. On the other hand, Haskell's type system makes makes it significantly
+easier to reason about and refactor code.
 
 On a spectrum of data science needs, Haskell is particularly
 suited to productizing models that have been developed in languages or
@@ -144,9 +152,9 @@ import qualified Data.Random as R
 import Data.Random.Source.PureMT
 ```
 
-Unlike in other Stan interfaces, in our prototype interface the Stan
-model itself is described in a data structure in the host language,
-here in Haskell. This has the disadvantage that the Stan file has
+In our prototype interface, the Stan model itself is described in a
+data structure in the host language, here Haskell. This is unlike
+typical Stan interfaces, and has the disadvantage that the Stan file has
 slightly more syntactic noise and is less familiar. However, the Stan
 model description is now a value in a programming language that can be
 manipulated and calculated based on the circumstances, a form of
@@ -155,7 +163,7 @@ other advantages that will become apparent later in this paper.
 Moreover, there are a number of ways in Haskell to reduce the
 syntactic noise by making the model look more like plain Stan code
 should that be desired in a more mature implementation; e.g.
-quasiquoting (Mainland, 2007).
+parsing the desired Stan syntax directly from a file or a here document.
 
 In our current implementation, the Stan model value looks like this:
 
@@ -180,15 +188,19 @@ linRegression = [
         ]
   ]
 ```
-In our implementation, Stan models are encoded directly as an abstract syntax tree defined as constructors in an algebraic data type `Stan`.
-Values in this type can then be manipulated in pattern matching code facilitating transformations of the syntax tree, or the introduction
-of functions that help generate models. For instance, `normal` is a function taking a pair of numbers (mean, standard deviation) and returning
-the abstract syntax tree representing a draw from a normal probability distribution. Our encoding as a data type is similar to that employed in the more polished [ScalaStan](https://github.com/cibotech/ScalaStan). Note that we do not yet support vectorised expressions, but this is not an intrinsic limitation of our approach. However, if two models are developed in the same Haskell module then names will not clash even if they overlap as the Stan code will be treated separately.
+In our implementation, Stan models are encoded as an abstract syntax 
+tree, defined as an algebraic data type `Stan`.
+This makes it straightforward to generate or transform Stan models
+programmatically by writing functions working on abstract syntax trees
+using pattern matching. For instance, `normal` is a function taking a pair of numbers (mean, standard deviation) and returning
+the abstract syntax tree representing a draw from a normal probability distribution. Our encoding as a data type is similar to that employed in the more polished [ScalaStan](https://github.com/cibotech/ScalaStan). Note that we do not yet support vectorised expressions, but this is not an intrinsic limitation of our approach. However, if two models are developed in the same Haskell module, then names will not clash even if they overlap as the Stan code will be treated separately.
 
-In the above code, the syntax `::` indicates a type annotation. Here `linRegression` has the type `[Stan]`, the list of values of type Stan, 
+In the above code, the syntax `::` indicates a type annotation. Here `linRegression` has
+the type `[Stan]`, a list of values of type `Stan`, 
 an algebraic data type with constructors (variants) Data, Parameters, Model corresponding to sections of a Stan model.
 
-We can easily see what Stan is generated by pretty-printing the data structure / program we just created. This corresponds to the Stan model file that we would use directly.
+We can easily see the Stan code corresponding to the data structure 
+(program) we just created by pretty-printing. This is just the Stan model file that we otherwise would use directly.
 
 ```haskell eval
 ppStans linRegression
@@ -216,11 +228,11 @@ plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
    & layout %~ xaxis ?~ (defAxis & axistitle ?~ "Rooms")
 ```
 To put this into the Stan data format, we create values of the `StanEnv` type using the custom infix operator `<~`. Haskell allows library
-programmers to define their own infix operators describing the model. Here, we have defined `v <~ d` to mean, create a Stan environment
-where the variable named v holds the data contained in the Haskell variable d. `d` can be any type for which we have defined how to turn
+programmers to define their own infix operators describing the model. Here, we have defined `v <~ d` to mean: ``Create a Stan environment
+where the variable named `v` holds the data contained in the Haskell 
+variable `d`." `d` can be of any type for which we have defined how to turn
 values into Stan values (that is, implemented the `ToStanData` type class). We concatenate these elementary Stan environments using the
-append operator `<>`. `StanEnv` itself is represented as a map (known as a dictionary in some other languages) from strings, indicating 
-the variable name to concrete values. This environment is used both to contain data to be passed to Stan for inference and the variables 
+append operator `<>`. `StanEnv` itself is represented as a map (known as a dictionary in some other languages) from strings, relating a variable name to its value. This environment is used both to contain data to be passed to Stan for inference and the variables 
 generated in simulation (see below).
 
 ```haskell do
@@ -247,8 +259,8 @@ postPlotRow res ["beta.1", "beta.2", "sigma" ] :: Html ()
 In order to obtain a richer probabilistic programming capability based on the Bayesian update in Stan, it suffices to
 add a function to simulate from a probabilistic model with fine control over which variables from the posterior are used in 
 the simulation. By using no variables from the posterior at all (and therefore not using any data either), we are simulating from the prior (prior predictive distribution); by using all the variables from the posterior, we are simulating from the posterior (posterior predictive distribution). Moreover, by controlling the independent
-variables in the dataset we can make predictions for new observations. In the case of timeseries modelling, by manipulating the
-starting value we can continue a simulation from the endpoint of observed data (that is, forecast). Crucially, we are proposing
+variables in the dataset, we can make predictions for new observations. In the case of timeseries modelling, by manipulating the
+starting value, we can continue a simulation from the endpoint of observed data (that is, forecast). Crucially, we are proposing
 that all of these functions are possible without writing the model twice as is usual: once in Stan, and once in the host language.
 Simulation operates on the same model description as that used for inference.
 
@@ -262,19 +274,19 @@ runSimulate
   -> [StanEnv] -- A list of independent simulation outputs
 ```
 
-Here `runSimulate n m e` will perform n independent simulations in the model m using environment e. If m contains values from a
-posterior (which has been generated with `runStan`) then each of the independent simulations will use a consistent set of samples from that 
+Here `runSimulate n m e` performs n independent simulations in the model m using environment e. If m contains values from a
+posterior (which has been generated with `runStan`), then each of the independent simulations uses a consistent set of samples from that 
 posterior representing the state of the Markov chain at a given iteration. Therefore we retain information about posterior correlations in the simulations.
 
-Internally, `runSimulate n` will call `runSimulateOnce` `n` times, simply collecting the results into a list. `runSimulateOnce` will step through the model definition's abstract syntax tree, potentially adding to the provided environment for every line. It will follow these rules:
+Internally, `runSimulate n` calls `runSimulateOnce` `n` times, simply collecting the results into a list. `runSimulateOnce` steps through the model definition's abstract syntax tree, potentially adding to the provided environment for every line. It will follow these rules:
 
 * If the current line is a static assignment (corresponding to `<-` in the Stan syntax), 
   calculate the right hand side and assign 
   it to the variable given on the left-hand side in the environment
-* if the current line is a draw from a probability distribution
+* If the current line is a draw from a probability distribution
   (corresponding to `~` in the Stan syntax), first check if the variable on the left-hand side 
   is already present in the environment from the posterior. 
-* If it is, select one of the iterations from the posterior and insert the posterior 
+* If the variable is present, select one of the iterations from the posterior and insert the posterior 
   value at that iteration into the environment.
   The iteration index selected is constant throughout one invocation of `runSimulateOnce`.
 * If the variable is not present, fully evaluate the arguments to the 
@@ -400,8 +412,6 @@ ACM SIG-PLAN  international  conference  on  Functional  programming, pages 225-
 George Giorgidze and Henrik Nilsson. Mixed-level Embedding and JIT Compilation for an Iteratively Staged DSL. In Julio Mariño, editor, Proceedings of the 19th
 Workshop on Functional and (Constraint) Logic Programming (WFLP 2010), volume 6559 of Lecture Notes in Computer Science, pages 48–65, Springer-Verlag, 2011.
 
-Geoffrey Mainland. 2007. Why it's nice to be quoted: quasiquoting for haskell. In Proceedings of the ACM SIGPLAN workshop on Haskell workshop (Haskell '07).
-ACM, New York, NY, USA, 73-82.
 
 J. Svenningsson and E. Axelsson. Combining deep and
 shallow embedding for EDSL. In Trends in Functional
