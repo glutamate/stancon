@@ -334,7 +334,7 @@ let -- simulate 100 datasets
     
     -- zip the residual with the dependent variables to prepare for plot
     residuals = zip (unPairDoubles $ fromJust $ Map.lookup "x" sdata)
-                    $
+                    differences
 ```
 
 Here we simulate 100 sets of predicted outcomes, that is 100 different outcome vectors `y`. 

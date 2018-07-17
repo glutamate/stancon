@@ -45,7 +45,7 @@ packages:
 # - ../open/stanhs
 - location:
     git: https://github.com/diffusionkinetics/open.git
-    commit: 9e1940350041b0f40bfd8b0bf31bb22064472c2b
+    commit: f967c115e10f7cdfa3809407b6e9eead86615345
   extra-dep: true
   subdirs:
   - parfoldl
