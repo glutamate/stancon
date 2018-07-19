@@ -88,7 +88,7 @@ classes. Another is that all values in Haskell, including functions,
 are first-class; i.e., they can be bound to variables, passed to and
 returned from functions, and so on, greatly facilitating implementing
 appropriate domain-specific abstractions. Haskell is also particularly
-well suited for symbolic computations, such as what is needed for
+well suited for symbolic computations, such as those needed for
 compiler applications. In the setting of embedded domain-specific
 languages, this allows for a spectrum of implementation strategies,
 from interpretation to compilation, as well as programmatic
@@ -166,7 +166,8 @@ other advantages that will become apparent later in this paper.
 Moreover, there are a number of ways in Haskell to reduce the
 syntactic noise by making the model look more like plain Stan code
 should that be desired in a more mature implementation; e.g.
-parsing the desired Stan syntax directly from a file or a here document.
+parsing the desired Stan syntax directly from a file or a "here document", i.e.
+an embedded multi-line string.
 
 In our current implementation, the Stan model value looks like this:
 
@@ -231,7 +232,7 @@ plotly "bh" [points (aes & x .~ rooms & y .~ medianValue) bh]
    & layout %~ xaxis ?~ (defAxis & axistitle ?~ "Rooms")
 ```
 To put this into the Stan data format, we create values of the `StanEnv` type using the custom infix operator `<~`. Haskell allows library
-programmers to define their own infix operators describing the model. Here, we have defined `v <~ d` to mean: ``Create a Stan environment
+programmers to define their own infix operators describing the model. Here, we have defined `v <~ d` to mean: "Create a Stan environment
 where the variable named `v` holds the data contained in the Haskell 
 variable `d`." `d` can be of any type for which we have defined how to turn
 values into Stan values (that is, implemented the `ToStanData` type class). We concatenate these elementary Stan environments using the
@@ -263,7 +264,7 @@ In order to obtain a richer probabilistic programming capability based on the Ba
 add a function to simulate from a probabilistic model with fine control over which variables from the posterior are used in 
 the simulation. By using no variables from the posterior at all (and therefore not using any data either), we are simulating from the prior (prior predictive distribution); by using all the variables from the posterior, we are simulating from the posterior (posterior predictive distribution). Moreover, by controlling the independent
 variables in the dataset, we can make predictions for new observations. In the case of timeseries modelling, by manipulating the
-starting value, we can continue a simulation from the endpoint of observed data (that is, forecast). Crucially, we are proposing
+starting value, we can continue a simulation from the endpoint of observed data (that is, forecast). Crucially, we propose
 that all of these functions are possible without writing the model twice as is usual: once in Stan, and once in the host language.
 Simulation operates on the same model description as that used for inference.
 
